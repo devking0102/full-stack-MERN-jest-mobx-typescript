@@ -1,8 +1,7 @@
 {
-  "name": "react-mobx-typescript-realworld-example-app",
+  "name": "student-Q-A",
   "version": "0.1.0",
   "private": true,
-  "homepage": "http://7anshuai.github.io/react-mobx-typescript-realworld-example-app/",
   "dependencies": {
     "@craco/craco": "^6.4.5",
     "@testing-library/jest-dom": "^4.2.4",
