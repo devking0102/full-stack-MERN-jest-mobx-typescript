@@ -14,8 +14,14 @@ export class userService {
     //get all users
     async getUsers(limit: any, offset: any) {
         try {
-            const users = await User.find({}).limit(limit).skip(offset)
-            return users
+            const users = await User.find().limit(limit).skip(offset).exec()
+            const count = await User.countDocuments()
+            let result = {
+                users: users,
+                totalCount: count,
+                totalPage: Math.ceil(count / limit)
+            }
+            return result
 
         } catch (error) {
             console.log(error)

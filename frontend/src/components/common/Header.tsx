@@ -2,84 +2,12 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Observer } from 'mobx-react-lite';
 import { useStore } from '../../store'
-
-const LoggedOutView = (props: any) => {
-  if (!props.currentUser) {
-    return (
-      <ul className="nav navbar-nav pull-xs-right">
-
-        <li className="nav-item">
-          <Link to="/" className="nav-link">
-            Home
-          </Link>
-        </li>
-
-        <li className="nav-item">
-          <Link to="/user" className="nav-link">
-            Users
-          </Link>
-        </li>
-
-        <li className="nav-item">
-          <Link to="/question" className="nav-link">
-            Questions
-          </Link>
-        </li>
-
-        <li className="nav-item">
-          <Link to="/answer" className="nav-link">
-            Answers
-          </Link>
-        </li>
-
-      </ul>
-    );
-  }
-  return null;
-};
-
-const LoggedInView = (props: any) => {
-  if (props.currentUser) {
-    return (
-      <ul className="nav navbar-nav pull-xs-right">
-
-        <li className="nav-item">
-          <Link to="/" className="nav-link">
-            Home
-          </Link>
-        </li>
-
-        <li className="nav-item">
-          <Link to="/editor" className="nav-link">
-            <i className="ion-compose" />&nbsp;New Post
-          </Link>
-        </li>
-
-        <li className="nav-item">
-          <Link to="/settings" className="nav-link">
-            <i className="ion-gear-a" />&nbsp;Settings
-          </Link>
-        </li>
-
-        <li className="nav-item">
-          <Link
-            to={`/@${props.currentUser.username}`}
-            className="nav-link"
-          >
-            <img src={props.currentUser.image} className="user-pic" alt="" />
-            {props.currentUser.username}
-          </Link>
-        </li>
-
-      </ul>
-    );
-  }
-
-  return null;
-};
+import { useLocation } from 'react-router-dom';
 
 const Header: React.FC = () => {
-  const { commonStore, userStore } = useStore()
+  const localtion = useLocation()
+  const {pathname} = localtion
+  const { commonStore } = useStore()
   return <Observer>{() => (
     <nav className="navbar navbar-light">
       <div className="container">
@@ -88,9 +16,26 @@ const Header: React.FC = () => {
           {commonStore.appName}
         </Link>
 
-        <LoggedOutView currentUser={userStore.currentUser} />
+        <ul className="nav navbar-nav flex-row pull-xs-right">
 
-        <LoggedInView currentUser={userStore.currentUser} />
+          <li className="nav-item">
+            <Link to="/" className="nav-link">
+              <span className={pathname === '/' ? 'fw-bolder' : ''}>Users</span>
+            </Link>
+          </li>
+
+          <li className="nav-item">
+            <Link to="/question" className="nav-link">
+              <span className={pathname === '/question' ? 'fw-bolder' : ''}>Questions</span>
+            </Link>
+          </li>
+
+          <li className="nav-item">
+            <Link to="/answer" className="nav-link">
+              <span className={pathname === '/answer' ? 'fw-bolder' : ''}>Answers</span>
+            </Link>
+          </li>
+        </ul>
       </div>
     </nav>
   )}</Observer>

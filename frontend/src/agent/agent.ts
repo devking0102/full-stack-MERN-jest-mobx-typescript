@@ -1,5 +1,8 @@
+
+
 import superagentPromise from 'superagent-promise';
 import _superagent, { ResponseError, Request, Response } from 'superagent';
+import commonStore from '@/stores/commonStore';
 
 const superagent = superagentPromise(_superagent, global.Promise);
 
@@ -19,25 +22,21 @@ const requests = {
   del: (url: string) =>
     superagent
       .del(`${API_ROOT}${url}`)
-      // .use(tokenPlugin)
       .end(handleErrors)
       .then(responseBody),
   get: (url: string) =>
     superagent
       .get(`${API_ROOT}${url}`)
-      // .use(tokenPlugin)
       .end(handleErrors)
       .then(responseBody),
   put: (url: string, body: any) =>
     superagent
       .put(`${API_ROOT}${url}`, body)
-      // .use(tokenPlugin)
       .end(handleErrors)
       .then(responseBody),
   post: (url: string, body: any) =>
     superagent
       .post(`${API_ROOT}${url}`, body)
-      // .use(tokenPlugin)
       .end(handleErrors)
       .then(responseBody),
 };
@@ -45,13 +44,15 @@ const requests = {
 const limit = (count: any, p: any) => `limit=${count}&offset=${p ? p * count : 0}`;
 
 const Users = {
-  all: (page: any, lim = 10) =>
+  paginate: (page: any, lim = 10) =>
     requests.get(`/user?${limit(lim, page)}`),
 };
 
 const Questions = {
-  all: (page: any, lim = 10) =>
+  paginate: (page: any, lim = 10) =>
     requests.get(`/question?${limit(lim, page)}`),
+  all: () =>
+    requests.get(`/question/all`),
   del: (id: string) =>
     requests.del(`/question/${id}`),
   get: (id: string) =>
@@ -63,8 +64,8 @@ const Questions = {
 };
 
 const Answers = {
-  all: (page: any, lim = 10) =>
-    requests.get(`/answer?${limit(lim, page)}`),
+  paginate: (page: any, lim = 10) =>
+    requests.get(`/answer?${limit(lim, page)}&user=${commonStore.user._id}`),
   byUser: (user: string, page: number) =>
     requests.get(`/answer?user=${user}&${limit(5, page)}`),
   del: (id: string) =>

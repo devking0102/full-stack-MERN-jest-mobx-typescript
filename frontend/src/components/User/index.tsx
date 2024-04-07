@@ -1,7 +1,7 @@
 import React from 'react';
 import { Observer } from 'mobx-react-lite';
 import { useStore } from '../../store';
-import Banner from './Banner';
+import Banner from '../common/Banner';
 import MainView from './MainView'
 
 const Home: React.FC = () => {
@@ -12,7 +12,7 @@ const Home: React.FC = () => {
     return (
       <div className="home-page">
 
-        <Banner appName={appName} title="Home"/>
+        <Banner appName={appName} title="Users"/>
 
         <div className="container page">
           <div className="row">

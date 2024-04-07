@@ -1,3 +1,4 @@
+import { func } from 'joi'
 import { Answer } from '../models/Answer'
 export class answerService {
     //create a answer
@@ -12,10 +13,19 @@ export class answerService {
     }
 
     //get user answers
-    async getAnswers(data: any) {
+    async getAnswers(data: any, limit: any, offset: any) {
         try {
             const answers = await Answer.find({user: data})
-            return answers
+                .limit(limit)
+                .skip(offset)
+                .exec()
+            const count = await Answer.find({user: data}).countDocuments()
+
+            return {
+                answers: answers,
+                totalCount: count,
+                totalPage: Math.ceil(count / limit)
+            }
 
         } catch (error) {
             console.log(error)
@@ -43,7 +53,7 @@ export class answerService {
                 //pass the id of the object you want to update
                 //data is for the new body you are updating the old one with
                 //new:true, so the dats being returned, is the update one
-                const answer = await Answer.findByIdAndUpdate({_id:id}, data, {new: true})                
+                const answer = await Answer.findByIdAndUpdate({_id:id}, data)                
                 if(!answer){
                     return "answer not available"
                 }

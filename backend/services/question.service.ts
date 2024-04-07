@@ -11,8 +11,28 @@ export class questionService {
         }
     }
 
+    //get paginate questions
+    async getQuestions(limit: any, offset: any) {
+        try {
+            const questions = await Question.find()
+                .limit(limit)
+                .skip(offset)
+                .exec()
+            const count = await Question.find().countDocuments()
+
+            return {
+                questions: questions,
+                totalCount: count,
+                totalPage: Math.ceil(count / limit)
+            }
+
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     //get all questions
-    async getQuestions() {
+    async getAllQuestions() {
         try {
             const questions = await Question.find({})
             return questions

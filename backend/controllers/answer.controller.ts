@@ -7,39 +7,39 @@ import { Question } from '../models/Question'
 class answerController {
     //add answer controller
     addAnswer = async (req: Request, res: Response) => {
-        if (!req.body.user) {
-            res.json({msg: `User doesn't selected!`})
+        if (!req.body.user_id) {
+            res.status(400).json(`User doesn't selected!`)
             return
         }
 
-        if (!req.body.question) {
-            res.json({msg: `Question doesn't selected!`})
+        if (!req.body.question_id) {
+            res.status(400).json(`Question doesn't selected!`)
             return
         }
 
-        let cuser = await User.findById({_id: req.body.user})
-        if (!cuser) {
-            res.json({msg: `User doesn't exist!`})
+        let user = await User.findById({_id: req.body.user_id})
+        if (!user) {
+            res.status(400).json(`User doesn't exist!`)
             return
         }
-        let cquestion = await Question.findById({_id: req.body.question})
-        if (!cquestion) {
-            res.json({msg: `Question doesn't exist!`})
+        let question = await Question.findById({_id: req.body.question_id})
+        if (!question) {
+            res.status(400).json(`Question doesn't exist!`)
             return
         }
         //data to be saved in database
         const data = {
             title: req.body.title,
             content: req.body.content,
-            user: cuser,
-            question: cquestion,
+            user: user,
+            question: question,
             created_at: new Date(),
         }
         //validating the request
         const {error, value} = AnswerschemaValidate.validate(data)
 
         if(error){
-            res.send(error.message)
+            res.status(404).send(error.message)
 
         }else{
             //call the create answer function in the service and pass the data from the request
@@ -51,12 +51,15 @@ class answerController {
 
     //get all answers
     getAnswers = async (req: Request, res: Response) => {
-        let user = await User.findById({_id: req.body.user})
-        if (!user) {
-            res.status(400).send({msg: `User doesn't selected!`})
+        const {user, limit, offset} = req.query
+        let cuser = await User.findById({_id: user})
+        
+        if (!cuser) {
+            res.status(400).send(`User doesn't selected!`)
         }
-        const answers = await answerServices.getAnswers(user)
-        res.send(answers)
+        await answerServices.getAnswers(cuser, limit, offset).then((result: any) => {
+            res.send(result)
+        })
     }
 
 
@@ -71,8 +74,51 @@ class answerController {
     //update answer
     updateAnswer = async (req: Request, res: Response) => {
         const id = req.params.id
-        const answer = await answerServices.updateAnswer(id, req.body)  
-        res.send(answer)
+        if (!id) {
+            res.status(400).json(`Answer doesn't exist!`)
+            return
+        }
+
+        if (!req.body.user_id) {
+            res.status(400).json(`User doesn't selected!`)
+            return
+        }
+
+        if (!req.body.question_id) {
+            res.status(400).json(`Question doesn't selected!`)
+            return
+        }
+
+        let user = await User.findById({_id: req.body.user_id})
+        if (!user) {
+            res.status(400).json(`User doesn't exist!`)
+            return
+        }
+        let question = await Question.findById({_id: req.body.question_id})
+        if (!question) {
+            res.status(400).json(`Question doesn't exist!`)
+            return
+        }
+        //data to be saved in database
+        const data = {
+            title: req.body.title,
+            content: req.body.content,
+            user: user,
+            question: question,
+            created_at: new Date(),
+        }
+        //validating the request
+        const {error, value} = AnswerschemaValidate.validate(data)
+
+        if(error){
+            res.status(404).send(error.message)
+
+        }else{
+            //call the update answer function in the service and pass the data from the request
+            const answer = await answerServices.updateAnswer(id, data)  
+            res.send(answer)
+        }
+        
     }
 
 

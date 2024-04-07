@@ -30,10 +30,9 @@ class userController {
     //get all users
     getUsers = async (req: Request, res: Response) => {
         const {limit, offset} = req.query
-        console.log(limit, offset);
         
-        const users = await userServices.getUsers(limit, offset)
-        res.send(users)
+        const result = await userServices.getUsers(limit, offset)
+        res.send(result)
     }
 
 

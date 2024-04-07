@@ -6,7 +6,9 @@
   "scripts": {
     "test": "jest",
     "mongo": "mongod --dbpath=./db",
-    "dev": "concurrently \"npm run mongo\" \"nodemon ./src/index.ts\""
+    "dev": "nodemon ./src/index.ts",
+    "start": "ts-node ./src/index.ts",
+    "serve": "concurrently \"npm run mongo\" \"npm start\""
   },
   "keywords": [],
   "author": "",

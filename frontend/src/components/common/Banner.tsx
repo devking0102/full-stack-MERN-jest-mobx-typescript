@@ -10,12 +10,14 @@ const Banner: React.FC<Props> = ({ appName, title }) => {
   //   return null;
   // }
   return (
-    <div className="banner">
-      <div className="container">
-        <h1 className="logo-font">
-          {appName}
-        </h1>
-        <p>{title}</p>
+    <div className='home-page'>
+      <div className="banner">
+        <div className="container">
+          <h1 className="logo-font">
+            {appName}
+          </h1>
+          <h3 className='text-pink text-center'>{title}</h3>
+        </div>
       </div>
     </div>
   );

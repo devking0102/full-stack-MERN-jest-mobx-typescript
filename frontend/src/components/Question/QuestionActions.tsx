@@ -1,32 +1,26 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-const ArticleActions: React.FC<any> = props => {
-  const article = props.article;
-  const handleDelete = () => props.onDelete(article.slug);
+const QuestionActions: React.FC<any> = props => {
+  const question = props.question;
+  const handleDelete = () => props.onDelete(question._id);
 
-  if (props.canModify) {
     return (
       <span>
 
         <Link
-          to={`/editor/${article.slug}`}
-          className="btn btn-outline-secondary btn-sm"
+          to={`/question/${question._id}`}
+          className="btn btn-outline-primary btn-sm"
         >
-          <i className="ion-edit" /> Edit Article
+          <i className="ion-edit" /> Edit Question
         </Link>
 
-        <button className="btn btn-outline-danger btn-sm" onClick={handleDelete}>
-          <i className="ion-trash-a" /> Delete Article
+        <button className="btn btn-outline-danger btn-sm ms-3" onClick={handleDelete}>
+          <i className="ion-trash-a" /> Delete Question
         </button>
 
       </span>
     );
-  }
-
-  return (
-    <span />
-  );
 };
 
-export default ArticleActions;
+export default QuestionActions;

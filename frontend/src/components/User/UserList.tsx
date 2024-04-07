@@ -5,7 +5,7 @@ import React from 'react';
 import { Table } from 'react-bootstrap';
 
 const UserList: React.FC<any> = props => {
-  if (props.loading && props.users.length === 0) {
+  if (props.loading) {
     return (
       <LoadingSpinner />
     );
@@ -23,7 +23,8 @@ const UserList: React.FC<any> = props => {
     <div>
       <Table responsive striped hover bordered>
         <thead>
-          <tr>
+          <tr className='align-middle text-center'>
+            <th>No</th>
             <th>Name</th>
             <th>Email</th>
             <th>Gender</th>
@@ -33,9 +34,9 @@ const UserList: React.FC<any> = props => {
         </thead>
         <tbody>
           {
-            props.users.map((user: any) => {
+            props.users.map((user: any, index: number) => {
               return (
-                <UserPreview user={user} />
+                <UserPreview user={user} key={user._id} index={index}/>
               );
             })
           }

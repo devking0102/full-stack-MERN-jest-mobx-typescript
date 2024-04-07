@@ -1,38 +1,18 @@
 import { observable, action, reaction, makeObservable } from 'mobx';
-import agent from '../agent/agent';
 
 export class CommonStore {
 
-  appName = 'Student Q&A';
-  // token = window.localStorage.getItem('jwt');
+  appName = 'Q & A';
   appLoaded = false;
-
-  // tags: string[] = [];
-  // isLoadingTags = false;
-  user = JSON.parse(window.localStorage.getItem('user') || '{}')
-
+  user = JSON.parse(localStorage.getItem('user') || '{}')
   constructor() {
     makeObservable(this, {
       appName: observable,
       user: observable,
       appLoaded: observable,
-      // tags: observable,
-      // isLoadingTags: observable,
-      // loadTags: action,
       setUser: action,
       setAppLoaded: action
     });
-
-    reaction(
-      () => this.user,
-      user => {
-        if (user) {
-          window.localStorage.setItem('user', JSON.stringify(user));
-        } else {
-          window.localStorage.removeItem('user');
-        }
-      }
-    );
   }
 
   setUser(user: object | null) {
@@ -41,6 +21,14 @@ export class CommonStore {
 
   setAppLoaded() {
     this.appLoaded = true;
+  }
+
+  getUserName() {
+    if (!!this.user && this.user._id) {
+      return this.user.firstName + ' ' + this.user.lastName
+    } else {
+      return ''
+    }
   }
 
 }

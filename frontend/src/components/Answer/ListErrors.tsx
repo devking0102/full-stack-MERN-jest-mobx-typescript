@@ -9,15 +9,16 @@ const ListErrors: React.FC<Props> = props => {
   if (errors) {
     return (
       <ul className="error-messages">
-        {
+        {errors.toString().replace(/"/g, '')}
+        {/* {
           Object.keys(errors).map((key: any) => {
             return (
               <li key={key}>
-                {key} {errors[key]}
+                {errors[key]}
               </li>
             );
           })
-        }
+        } */}
       </ul>
     );
   } else {

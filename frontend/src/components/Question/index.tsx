@@ -1,92 +1,57 @@
 import React, { useEffect } from "react";
-import { useHistory, useParams } from "react-router-dom";
 import { Observer } from "mobx-react-lite";
-import { marked } from "marked";
-
 import { useStore } from '../../store';
-import RedError from "../RedError";
-import ArticleMeta from "./QuestionMeta";
-import CommentContainer from "./CommentContainer";
+import QuestionList from "./QuestionList";
+import Banner from "../common/Banner";
 
-const Article: React.FC = () => {
-  const history = useHistory();
-  const { slug } = useParams();
-  const { articleStore, commentStore, userStore } = useStore();
+const Question: React.FC = (props: any) => {
+  const { questionStore, commonStore } = useStore();
+  const handleSetPage = (page: number) => {
+    questionStore.setPage(page);
+    questionStore.loadQuestions();
+  };
+  
+  const handleDelete = (id: string) => {
+    questionStore.deleteQuestion(id)
+  }
+
   useEffect(() => {
-    if (slug) {
-      articleStore.loadArticle(slug, { acceptCached: true });
-      commentStore.setArticleSlug(slug);
-      commentStore.loadComments();
+    if (!commonStore.user._id) {
+      return props.history.push('/')
+    } else {
+      questionStore.loadQuestions();
     }
-  }, [ articleStore, commentStore, slug ]);
+  }, [questionStore]);
 
-  const handleDeleteArticle = (slug: string) => {
-    articleStore
-      .deleteArticle(slug)
-      .then(() => history.replace("/"));
-  };
-
-  const handleDeleteComment = (id: number) => {
-    commentStore.deleteComment(id);
-  };
 
   return <Observer>{() => {
-    const { currentUser } = userStore;
-    const { comments, commentErrors } = commentStore;
-    const article = articleStore.getArticle(slug || '');
+    const {
+      questions,
+      isLoading,
+      page,
+      totalPagesCount
+    } = questionStore;
 
-    if (!article) return <RedError message="Can't load article" />;
-
-    const markup = { __html: marked.parse(article.body, { sanitize: true }) };
-    const canModify =
-      currentUser && currentUser.username === article.author.username;
     return (
-      <div className="article-page">
-        <div className="banner">
-          <div className="container">
-            <h1>{article.title}</h1>
-            <ArticleMeta
-              article={article}
-              canModify={canModify}
-              onDelete={handleDeleteArticle}
-            />
-          </div>
-        </div>
-
-        <div className="container page">
-          <div className="row article-content">
-            <div className="col-xs-12">
-              <div dangerouslySetInnerHTML={markup} />
-
-              <ul className="tag-list">
-                {article.tagList.map((tag: string) => {
-                  return (
-                    <li className="tag-default tag-pill tag-outline" key={tag}>
-                      {tag}
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          </div>
-
-          <hr />
-
-          <div className="article-actions" />
-
+      <div className="page">
+        <Banner appName={commonStore.appName} title="Questions"/>
+        <div className="container">
           <div className="row">
-            {<CommentContainer
-              comments={comments}
-              errors={commentErrors}
-              slug={slug}
-              currentUser={currentUser}
-              onDelete={handleDeleteComment}
-            />}
+            <div className="col-md-12">
+              <QuestionList
+                questions={questions}
+                isLoading={isLoading}
+                totalPagesCount={totalPagesCount}
+                currentPage={page}
+                onSetPage={handleSetPage}
+                onDelete={handleDelete}
+              />
+            </div>
           </div>
         </div>
       </div>
     );
-  }}</Observer>;
+  }}</Observer>
 };
 
-export default Article;
+export default Question;

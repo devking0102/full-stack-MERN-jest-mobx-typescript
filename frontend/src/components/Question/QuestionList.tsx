@@ -1,29 +1,42 @@
-import ArticlePreview from './QuestionPreview';
+import QuestionPreview from './QuestionPreview';
 import ListPagination from '../common/ListPagination';
 import LoadingSpinner from '../common/LoadingSpinner';
 import React from 'react';
+import { Link } from 'react-router-dom';
 
-const ArticleList: React.FC<any> = props => {
-  if (props.loading && props.articles.length === 0) {
+const QuestionList: React.FC<any> = props => {
+  if (props.isLoading) {
     return (
       <LoadingSpinner />
     );
   }
 
-  if (props.articles.length === 0) {
-    return (
-      <div className="article-preview">
-        No articles are here... yet.
-      </div>
-    );
-  }
+  const NoQuestion = () => {
+    if (props.questions.length === 0) {
+      return (
+        <h4 className="question-preview text-center text-danger">
+          No questions are here... yet.
+        </h4>  
+      );
+    }
+    return null;
+  };
 
   return (
     <div>
+      <div className='mb-3 pull-right'>
+      <Link
+          to={`/question/create`}
+          className="btn btn-outline-danger"
+        >
+          <i className="ion-edit" /> Create Question
+        </Link>
+      </div>
+      <NoQuestion />  
       {
-        props.articles.map((article: any) => {
+        props.questions.map((question: any) => {
           return (
-            <ArticlePreview article={article} key={article.slug} />
+            <QuestionPreview question={question} key={question._id} onDelete={props.onDelete}/>
           );
         })
       }
@@ -37,4 +50,4 @@ const ArticleList: React.FC<any> = props => {
   );
 };
 
-export default ArticleList;
+export default QuestionList;

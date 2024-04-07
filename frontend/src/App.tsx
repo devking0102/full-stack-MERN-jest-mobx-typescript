@@ -2,12 +2,12 @@ import React, { useEffect } from 'react';
 import { Switch, Route, HashRouter as Router } from 'react-router-dom';
 import { useStore } from '@/store'; // importing module using path alias
 import Header from '@/components/common/Header'; // importing module using absolute paths
-import Home from '@components/Home';
-import Login from '@components/Login';
-import Register from '@components/Register';
+import User from '@/components/User';
+import AddAnswer from '@components/Answer/AddAnswer';
+import EditAnswer from '@components/Answer/EditAnswer';
+import AddQuestion from '@components/Question/AddQuestion';
+import EditQuestion from '@components/Question/EditQuestion';
 import PrivateRoute from '@/components/common/PrivateRoute';
-import Settings from '@components/Settings';
-import Profile from '@components/Profile';
 import Question from '@components/Question';
 import Answer from '@components/Answer';
 
@@ -22,14 +22,13 @@ const App: React.FC = () => {
     <Router>
       <Header />
       <Switch>
-        <Route path="/answer" component={Login} />
-        <Route path="/register" component={Register} />
-        <PrivateRoute path="/settings" component={Settings} />
-        <Route path="/@:username" component={Profile} />
-        <Route path="/@:username/favorites" component={Profile} />
+        <PrivateRoute path="/question/create" component={AddQuestion} />
+        <PrivateRoute path="/question/:id" component={EditQuestion} />
+        <PrivateRoute path="/answer/create" component={AddAnswer} />
+        <PrivateRoute path="/answer/:id" component={EditAnswer} />
         <PrivateRoute path="/answer" component={Answer} />
         <PrivateRoute path="/question" component={Question} />
-        <Route path="/" component={Home} />
+        <Route path="/" component={User} />
       </Switch>
     </Router>
   );

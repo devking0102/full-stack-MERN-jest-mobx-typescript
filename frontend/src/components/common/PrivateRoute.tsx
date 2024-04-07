@@ -7,7 +7,7 @@ const PrivateRoute: React.FC<any> = (props: any) => {
   const { commonStore } = useStore();
   return (
     <Observer>{() => {
-      if (commonStore.user) return <Route {...props} />;
+      if (commonStore.user && commonStore.user._id) return <Route {...props} />;
       return <Redirect to="/" />;
     }}</Observer>
   );

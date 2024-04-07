@@ -3,7 +3,9 @@ import dotenv from "dotenv"
 dotenv.config()
 import mongoose from "mongoose"
 
-mongoose.connect('mongodb://127.0.0.1:27017/studentQA')
+mongoose.connect('mongodb://127.0.0.1:27017/studentQA').then(() => {
+    console.log('MongoDB Connected!')
+})
 const port = process.env.PORT || 5000
 
 app.listen(port, ():void => {

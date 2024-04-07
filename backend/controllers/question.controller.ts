@@ -27,7 +27,7 @@ class questionController {
         const {error, value} = QuestionschemaValidate.validate(data)
 
         if(error){
-            res.send(error.message)
+            res.status(404).send(error.message)
 
         }else{
             //call the create question function in the service and pass the data from the request
@@ -38,11 +38,18 @@ class questionController {
     }
 
     //get all questions
-    getQuestions = async (req: Request, res: Response) => {
-        const questions = await questionServices.getQuestions()
+    getAllQuestions = async (req: Request, res: Response) => {
+        const questions = await questionServices.getAllQuestions()
         res.send(questions)
     }
 
+    //get paginate questions
+    getQuestions = async (req: Request, res: Response) => {
+        const {limit, offset} = req.query
+        await questionServices.getQuestions(limit, offset).then((result: any) => {
+            res.send(result)
+        })
+    }
 
     //get a single question
     getAQuestion = async (req: Request, res: Response) => {
@@ -55,8 +62,39 @@ class questionController {
     //update question
     updateQuestion = async (req: Request, res: Response) => {
         const id = req.params.id
-        const question = await questionServices.updateQuestion(id, req.body)  
-        res.send(question)
+        if (!id) {
+            res.status(400).json(`Answer doesn't exist!`)
+            return
+        }
+
+        if (!req.body.user_id) {
+            res.status(400).json(`User doesn't selected!`)
+            return
+        }
+
+        let user = await User.findById({_id: req.body.user_id})
+        if (!user) {
+            res.status(400).json(`User doesn't exist!`)
+            return
+        }
+        //data to be saved in database
+        const data = {
+            title: req.body.title,
+            content: req.body.content,
+            user: user,
+            created_at: new Date(),
+        }
+        //validating the request
+        const {error, value} = QuestionschemaValidate.validate(data)
+
+        if(error){
+            res.status(404).send(error.message)
+
+        }else{
+            //call the update answer function in the service and pass the data from the request
+            const question = await questionServices.updateQuestion(id, data)  
+            res.send(question)
+        }
     }
 
 

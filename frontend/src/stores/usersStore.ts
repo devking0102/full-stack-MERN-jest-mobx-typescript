@@ -18,6 +18,7 @@ export class UsersStore {
   isLoading = false;
   page = 0;
   totalPagesCount = 0;
+  totalCount = 0;
   currentUser?: User;
   loadingUser?: boolean;
 
@@ -28,6 +29,7 @@ export class UsersStore {
       isLoading: observable,
       page: observable,
       totalPagesCount: observable,
+      totalCount: observable,
       setPage: action,
       loadUsers: action,
     });
@@ -48,23 +50,33 @@ export class UsersStore {
 
   loadUsers() {
     this.isLoading = true;
-    return agent.Users.all(this.page, LIMIT)
-      .then(action((users: any) => {
+    return agent.Users.paginate(this.page, LIMIT)
+      .then(action(({users, totalCount, totalPage}: {users: any, totalCount: number, totalPage: number}) => {
         this.tempUsers.clear();
         users.forEach((user: any) => this.tempUsers.set(user._id, user));
-        this.totalPagesCount = Math.ceil(users.length / LIMIT);
+        this.totalPagesCount = totalPage;
       }))
       .finally(action(() => { this.isLoading = false; }));
   }
 
   selectUser(id: string) {
     this.currentUser = this.tempUsers.get(id)
-    localStorage.setItem('user', JSON.stringify(this.currentUser))
+    const user = {
+      _id: this.currentUser?._id,
+      email: this.currentUser?.email,
+      firstName: this.currentUser?.firstName,
+      lastName: this.currentUser?.lastName,
+      gender: this.currentUser?.gender,
+      birth: this.currentUser?.birth,
+    }
+    localStorage.setItem('user', JSON.stringify(user))
+    commonStore.setUser(user)
+    return Promise.resolve(this.currentUser)
   }
 
   getUser() {
-    const user = JSON.parse(localStorage.getItem('user') || '{}')
-    commonStore.user = user
+    const user = JSON.parse(localStorage.getItem('user') || 'null')
+    this.currentUser = user
     commonStore.setAppLoaded()
     return user
   }

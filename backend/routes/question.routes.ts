@@ -10,6 +10,9 @@ router.post('/',QuestionController.addQuestion)
 //get questions
 router.get('/', QuestionController.getQuestions)
 
+//get all questions
+router.get('/all', QuestionController.getAllQuestions)
+
 //get single question
 router.get('/:id', QuestionController.getAQuestion)
 

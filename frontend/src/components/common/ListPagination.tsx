@@ -7,9 +7,9 @@ type Props = {
 };
 
 const ListPagination: React.FC<Props> = props => {
-  if (props.totalPagesCount < 2) {
-    return null;
-  }
+  // if (props.totalPagesCount < 2) {
+  //   return null;
+  // }
 
   const range = [];
   for (let i = 0; i < props.totalPagesCount; ++i) {
@@ -17,8 +17,8 @@ const ListPagination: React.FC<Props> = props => {
   }
 
   return (
-    <nav>
-      <ul className="pagination">
+    <nav className='d-flex'>
+      <ul className="pagination m-auto">
 
         {
           range.map(v => {
@@ -29,12 +29,12 @@ const ListPagination: React.FC<Props> = props => {
             };
             return (
               <li
-                className={ isCurrent ? 'page-item active' : 'page-item' }
+                className={ isCurrent ? 'page-item active mx-1' : 'page-item mx-1' }
                 onClick={onClick}
                 key={v.toString()}
               >
 
-                <a className="page-link" href="">{v + 1}</a>
+                <a className="btn page-link" href="">{v + 1}</a>
 
               </li>
             );
