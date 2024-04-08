@@ -4,10 +4,16 @@ export class userService {
     async createUser(data: any) {
         try {
             const newUser = await User.create(data)
-            return newUser
+            return {
+                success: true,
+                data: newUser
+            }
 
         } catch (error) {
-            console.log(error)
+            return {
+                success: false,
+                msg: 'Error occured!'
+            }
         }
     }
 
@@ -17,14 +23,19 @@ export class userService {
             const users = await User.find().limit(limit).skip(offset).exec()
             const count = await User.countDocuments()
             let result = {
-                users: users,
-                totalCount: count,
-                totalPage: Math.ceil(count / limit)
+                success: true,
+                data: {
+                    users: users,
+                    totalCount: count,
+                    totalPage: Math.ceil(count / limit)
+                }
             }
             return result
-
         } catch (error) {
-            console.log(error)
+            return {
+                success: false,
+                msg: 'Error occured!'
+            }
         }
     }
 
@@ -34,12 +45,21 @@ export class userService {
         try {
             const user = await User.findById({_id:id})
             if (!user) {
-                return 'user not available'
+                return {
+                    success: false,
+                    msg: 'user not available'
+                }
             }
-            return user
+            return {
+                success: true,
+                data: user
+            }
 
         } catch (error) {
-            console.log(error)
+            return {
+                success: false,
+                msg: 'Error occured!'
+            }
         }
     }
 
@@ -51,11 +71,20 @@ export class userService {
                 //new:true, so the dats being returned, is the update one
                 const user = await User.findByIdAndUpdate({_id:id}, data, {new: true})                
                 if(!user){
-                    return "user not available"
+                    return {
+                        success: false,
+                        msg: 'User not available!'
+                    }
                 }
-                return user          
+                return {
+                    success: true,
+                    data: user
+                }          
         } catch (error) {
-            console.log(error)
+            return {
+                success: false,
+                msg: 'Error occured!'
+            }
         }
     }
 
@@ -64,10 +93,21 @@ export class userService {
         try {
             const user = await User.findByIdAndDelete(id)
             if (!user) {
-                return 'user not available'
+                return {
+                    success: false,
+                    msg: 'User not available!'
+                }
+            }
+            const count = await User.countDocuments()
+            return {
+                success: true,
+                data: count
             }
         } catch (error) {
-            console.log(error)
+            return {
+                success: false,
+                msg: 'Error occured!'
+            }
         }
     }
 }

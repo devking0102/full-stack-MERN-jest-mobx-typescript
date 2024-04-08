@@ -8,23 +8,35 @@ class answerController {
     //add answer controller
     addAnswer = async (req: Request, res: Response) => {
         if (!req.body.user_id) {
-            res.status(400).json(`User doesn't selected!`)
+            res.status(404).json({
+                success: false,
+                msg: `User doesn't selected!`
+            })
             return
         }
 
         if (!req.body.question_id) {
-            res.status(400).json(`Question doesn't selected!`)
+            res.status(404).json({
+                success: false,
+                msg: `Question doesn't selected!`
+            })
             return
         }
 
         let user = await User.findById({_id: req.body.user_id})
         if (!user) {
-            res.status(400).json(`User doesn't exist!`)
+            res.status(404).json({
+                success: false,
+                msg: `User doesn't exist!`
+            })
             return
         }
         let question = await Question.findById({_id: req.body.question_id})
         if (!question) {
-            res.status(400).json(`Question doesn't exist!`)
+            res.status(404).json({
+                success: false,
+                msg: `Question doesn't exist!`
+            })
             return
         }
         //data to be saved in database
@@ -39,12 +51,15 @@ class answerController {
         const {error, value} = AnswerschemaValidate.validate(data)
 
         if(error){
-            res.status(404).send(error.message)
+            res.status(404).json({
+                success: false,
+                msg: error.message
+            })
 
         }else{
             //call the create answer function in the service and pass the data from the request
-            const answer = await answerServices.createAnswer(value)
-            res.status(201).send(answer)          
+            const result = await answerServices.createAnswer(value)
+            res.status(201).json(result)          
         }
         
     }
@@ -55,10 +70,13 @@ class answerController {
         let cuser = await User.findById({_id: user})
         
         if (!cuser) {
-            res.status(400).send(`User doesn't selected!`)
+            res.status(404).json({
+                success: false,
+                msg: `User doesn't selected!`
+            })
         }
         await answerServices.getAnswers(cuser, limit, offset).then((result: any) => {
-            res.send(result)
+            res.json(result)
         })
     }
 
@@ -67,36 +85,51 @@ class answerController {
     getAAnswer = async (req: Request, res: Response) => {
         //get id from the parameter
         const id = req.params.id
-        const answer = await answerServices.getAnswer(id)
-        res.send(answer)
+        const result = await answerServices.getAnswer(id)
+        res.json(result)
     }
 
     //update answer
     updateAnswer = async (req: Request, res: Response) => {
         const id = req.params.id
         if (!id) {
-            res.status(400).json(`Answer doesn't exist!`)
+            res.status(404).json({
+                success: false,
+                msg: `Answer doesn't exist!`
+            })
             return
         }
 
         if (!req.body.user_id) {
-            res.status(400).json(`User doesn't selected!`)
+            res.status(404).json({
+                success: false,
+                msg: `User doesn't selected!`
+            })
             return
         }
 
         if (!req.body.question_id) {
-            res.status(400).json(`Question doesn't selected!`)
+            res.status(404).json({
+                success: false,
+                msg: `Question doesn't selected!`
+            })
             return
         }
 
         let user = await User.findById({_id: req.body.user_id})
         if (!user) {
-            res.status(400).json(`User doesn't exist!`)
+            res.status(404).json({
+                success: false,
+                msg: `User doesn't exist!`
+            })
             return
         }
         let question = await Question.findById({_id: req.body.question_id})
         if (!question) {
-            res.status(400).json(`Question doesn't exist!`)
+            res.status(404).json({
+                success: false,
+                msg: `Question doesn't exist!`
+            })
             return
         }
         //data to be saved in database
@@ -111,24 +144,41 @@ class answerController {
         const {error, value} = AnswerschemaValidate.validate(data)
 
         if(error){
-            res.status(404).send(error.message)
+            res.status(404).json({
+                success: false,
+                msg: error.message
+            })
 
         }else{
             //call the update answer function in the service and pass the data from the request
-            const answer = await answerServices.updateAnswer(id, data)  
-            res.send(answer)
+            const result = await answerServices.updateAnswer(id, data)  
+            res.json(result)
         }
         
     }
 
-
     //delete a answer
     deleteAnswer = async (req: Request, res: Response) => {
         const id = req.params.id
-        await answerServices.deleteAnswer(id)
-        res.send('answer deleted')
+        const { user_id } = req.query
+        if (!user_id) {
+            res.status(404).json({
+                success: false,
+                msg: `User doesn't selected!`
+            })
+            return
+        }
+        const user = await User.findById({_id: user_id})
+        if (!user) {
+            res.status(404).json({
+                success: false,
+                msg: `User doesn't exist!`
+            })
+            return
+        }
+        const result = await answerServices.deleteAnswer(id, user)
+        res.json(result)
     }
-
 }
 
 //export class

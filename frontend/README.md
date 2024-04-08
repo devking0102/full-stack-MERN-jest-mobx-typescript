@@ -4,7 +4,7 @@
 
 To get the frontend running locally:
 
-- `yarn install` to install all req'd dependencies
+- `yarn install` to install all required dependencies
 - `yarn start` to start the local server (this project uses create-react-app)
 
 

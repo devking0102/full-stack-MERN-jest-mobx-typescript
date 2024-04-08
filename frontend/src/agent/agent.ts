@@ -6,6 +6,7 @@ import commonStore from '@/stores/commonStore';
 
 const superagent = superagentPromise(_superagent, global.Promise);
 
+// define api root
 const API_ROOT = 'http://localhost:5000/api';
 
 const handleErrors = (err: ResponseError) => {
@@ -60,7 +61,7 @@ const Questions = {
   update: (question: any) =>
     requests.put(`/question/${question._id}`, question),
   create: (question: any) =>
-    requests.post('/question', { question })
+    requests.post('/question', question)
 };
 
 const Answers = {
@@ -69,7 +70,7 @@ const Answers = {
   byUser: (user: string, page: number) =>
     requests.get(`/answer?user=${user}&${limit(5, page)}`),
   del: (id: string) =>
-    requests.del(`/answer/${id}`),
+    requests.del(`/answer/${id}?user_id=${commonStore.user._id}`),
   get: (id: string) =>
     requests.get(`/answer/${id}`),
   update: (answer: any) =>

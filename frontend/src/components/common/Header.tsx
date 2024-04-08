@@ -26,13 +26,13 @@ const Header: React.FC = () => {
 
           <li className="nav-item">
             <Link to="/question" className="nav-link">
-              <span className={pathname === '/question' ? 'fw-bolder' : ''}>Questions</span>
+              <span className={(pathname.search('/question') > -1) ? 'fw-bolder' : ''}>Questions</span>
             </Link>
           </li>
 
           <li className="nav-item">
             <Link to="/answer" className="nav-link">
-              <span className={pathname === '/answer' ? 'fw-bolder' : ''}>Answers</span>
+              <span className={(pathname.search('/answer') > -1) ? 'fw-bolder' : ''}>Answers</span>
             </Link>
           </li>
         </ul>

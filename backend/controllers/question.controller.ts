@@ -6,48 +6,57 @@ import { User } from '../models/User'
 class questionController {
     //add question controller
     addQuestion = async (req: Request, res: Response) => {
-        if (!req.body.user) {
-            res.json({msg: `User doesn't selected!`})
+        if (!req.body.user_id) {
+            res.status(404).json({
+                success: false,
+                msg: `User doesn't selected!`
+            })
             return
         }
 
-        let cuser = await User.findById({_id: req.body.user})
-        if (!cuser) {
-            res.json({msg: `User doesn't exist!`})
-            return
+        let user = await User.findById({_id: req.body.user_id})
+        if (!user) {
+            res.status(404).json({
+                success: false,
+                msg: `User doesn't exist!`
+            })
+           return
         }
         //data to be saved in database
         const data = {
             title: req.body.title,
             content: req.body.content,
-            user: cuser,
+            user: user,
             created_at: new Date(),
         }
         //validating the request
         const {error, value} = QuestionschemaValidate.validate(data)
 
         if(error){
-            res.status(404).send(error.message)
+            res.status(404).json({
+                success: false,
+                msg: error.message
+            })
 
         }else{
             //call the create question function in the service and pass the data from the request
-            const question = await questionServices.createQuestion(value)
-            res.status(201).send(question)          
+            const result = await questionServices.createQuestion(value)
+            res.status(201).json(result)          
         }
         
     }
 
     //get all questions
     getAllQuestions = async (req: Request, res: Response) => {
-        const questions = await questionServices.getAllQuestions()
-        res.send(questions)
+        const result = await questionServices.getAllQuestions()
+        res.json(result)
     }
 
-    //get paginate questions
+    //get paginated questions
     getQuestions = async (req: Request, res: Response) => {
         const {limit, offset} = req.query
         await questionServices.getQuestions(limit, offset).then((result: any) => {
-            res.send(result)
+            res.json(result)
         })
     }
 
@@ -55,26 +64,35 @@ class questionController {
     getAQuestion = async (req: Request, res: Response) => {
         //get id from the parameter
         const id = req.params.id
-        const question = await questionServices.getQuestion(id)
-        res.send(question)
+        const result = await questionServices.getQuestion(id)
+        res.json(result)
     }
 
     //update question
     updateQuestion = async (req: Request, res: Response) => {
         const id = req.params.id
         if (!id) {
-            res.status(400).json(`Answer doesn't exist!`)
+            res.status(404).json({
+                success: false,
+                msg: `Question doesn't exist!`
+            })
             return
         }
 
         if (!req.body.user_id) {
-            res.status(400).json(`User doesn't selected!`)
+            res.status(404).json({
+                success: false,
+                msg: `User doesn't selected!`
+            })
             return
         }
 
         let user = await User.findById({_id: req.body.user_id})
         if (!user) {
-            res.status(400).json(`User doesn't exist!`)
+            res.status(404).json({
+                success: false,
+                msg: `User doesn't exist!`
+            })
             return
         }
         //data to be saved in database
@@ -88,12 +106,15 @@ class questionController {
         const {error, value} = QuestionschemaValidate.validate(data)
 
         if(error){
-            res.status(404).send(error.message)
+            res.status(404).json({
+                success: false,
+                msg: error.message
+            })
 
         }else{
             //call the update answer function in the service and pass the data from the request
-            const question = await questionServices.updateQuestion(id, data)  
-            res.send(question)
+            const result = await questionServices.updateQuestion(id, data)  
+            res.json(result)
         }
     }
 
@@ -101,8 +122,8 @@ class questionController {
     //delete a question
     deleteQuestion = async (req: Request, res: Response) => {
         const id = req.params.id
-        await questionServices.deleteQuestion(id)
-        res.send('question deleted')
+        const result = await questionServices.deleteQuestion(id)
+        res.json(result)
     }
 
 }

@@ -5,10 +5,16 @@ export class answerService {
     async createAnswer(data: any) {
         try {
             const newAnswer = await Answer.create(data)
-            return newAnswer
+            return {
+                success: true,
+                data: newAnswer
+            }
 
         } catch (error) {
-            console.log(error)
+            return {
+                success: false,
+                msg: 'Answer created failed!'
+            }
         }
     }
 
@@ -19,12 +25,15 @@ export class answerService {
                 .limit(limit)
                 .skip(offset)
                 .exec()
-            const count = await Answer.find({user: data}).countDocuments()
+            const count = await Answer.find({user: data}).countDocuments().exec()
 
             return {
-                answers: answers,
-                totalCount: count,
-                totalPage: Math.ceil(count / limit)
+                success: true,
+                data: {
+                    answers: answers,
+                    totalCount: count,
+                    totalPage: Math.ceil(count / limit)
+                }
             }
 
         } catch (error) {
@@ -38,9 +47,16 @@ export class answerService {
         try {
             const answer = await Answer.findById({_id:id})
             if (!answer) {
-                return 'answer not available'
+                return {
+                    success: false,
+                    msg: 'answer not available'
+                }
+
             }
-            return answer
+            return {
+                success: true,
+                data: answer
+            }
 
         } catch (error) {
             console.log(error)
@@ -53,22 +69,40 @@ export class answerService {
                 //pass the id of the object you want to update
                 //data is for the new body you are updating the old one with
                 //new:true, so the dats being returned, is the update one
-                const answer = await Answer.findByIdAndUpdate({_id:id}, data)                
+                const answer = await Answer.findByIdAndUpdate({_id:id}, data)
                 if(!answer){
-                    return "answer not available"
+                    return {
+                        success: false,
+                        msg: "Answer update is not available!"
+                    }
                 }
-                return answer          
+                return {
+                    success: true,
+                    data: answer
+                }
         } catch (error) {
-            console.log(error)
+            return {
+                success: false,
+                msg: "Answer update is failed!"
+            }
         }
     }
 
     //delete a answer by using the find by id and delete 
-    async deleteAnswer(id: string) {
+    async deleteAnswer(id: string, user: any) {
         try {
             const answer = await Answer.findByIdAndDelete(id)
             if (!answer) {
-                return 'answer not available'
+                return {
+                    success: false,
+                    msg: "Answer delete is not available!"
+                }
+            } else {
+                const count = await Answer.find({user: user}).countDocuments()
+                return {
+                    success: true,
+                    data: count
+                }
             }
         } catch (error) {
             console.log(error)

@@ -51,10 +51,16 @@ export class UsersStore {
   loadUsers() {
     this.isLoading = true;
     return agent.Users.paginate(this.page, LIMIT)
-      .then(action(({users, totalCount, totalPage}: {users: any, totalCount: number, totalPage: number}) => {
-        this.tempUsers.clear();
-        users.forEach((user: any) => this.tempUsers.set(user._id, user));
-        this.totalPagesCount = totalPage;
+      .then(action(( result: any ) => {
+        if (result.success) {
+          const { users, totalPage, totalCount} = result.data
+          this.tempUsers.clear();
+          users.forEach((user: any) => this.tempUsers.set(user._id, user));
+          this.totalPagesCount = totalPage;
+          this.totalCount = totalCount
+        } else {
+          console.log(result.msg)
+        }
       }))
       .finally(action(() => { this.isLoading = false; }));
   }
@@ -77,6 +83,7 @@ export class UsersStore {
   getUser() {
     const user = JSON.parse(localStorage.getItem('user') || 'null')
     this.currentUser = user
+    commonStore.setUser(user)
     commonStore.setAppLoaded()
     return user
   }

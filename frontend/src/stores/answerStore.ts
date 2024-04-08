@@ -97,15 +97,22 @@ export class AnswerStore {
   loadAnswers() {
     this.isLoading = true;
     return agent.Answers.paginate(this.page, LIMIT)
-      .then(action(({answers, totalCount, totalPage}: {answers: any, totalCount: number, totalPage: number}) => {
+      .then(action((result: any) => {
         this.tempAnswers.clear();
-        answers.forEach((answer: any) => this.tempAnswers.set(answer._id, answer));
-        this.totalPagesCount = totalPage;
-        this.totalCount = totalCount;
+        if (result.success) {
+          const answers = result.data.answers
+          answers.forEach((answer: any) => this.tempAnswers.set(answer._id, answer))
+          this.totalPagesCount = result.data.totalPage
+          this.totalCount = result.data.totalCount
+        } else {
+          console.log(result.msg)
+        }
       }))
-      .catch((err: any) => {
-        console.log(err);
-        
+      .catch((err: any) => {        
+        if (err && err.response && err.response.status === 404) {
+          console.log(err.response.msg);
+        }
+        throw err;
       })
       .finally(action(() => { this.isLoading = false; }));
   }
@@ -117,9 +124,15 @@ export class AnswerStore {
     };
     this.isLoading = true;
     return agent.Answers.get(id)
-      .then(action(( answer: any) => {
-        this.tempAnswers.set(answer._id, answer);
-        this.setData(answer)
+      .then(action(( result: any) => {
+        if (result.success) {
+          const answer = result.data
+          this.tempAnswers.set(answer._id, answer);
+          this.setData(answer)
+        } else {
+          console.log(result.msg);
+          
+        }
         return answer;
       }))
       .finally(action(() => { this.isLoading = false; }));
@@ -135,12 +148,20 @@ export class AnswerStore {
       user_id: commonStore.user?._id
     }
     return agent.Answers.create(data)
-      .then((answer:any) => {
-        this.tempAnswers.set(answer._id, answer);
-        return answer;
+      .then((result: any) => {
+        if (result.success) {
+          const answer = result.data
+          this.tempAnswers.set(answer._id, answer);
+          this.totalPagesCount = Math.ceil(this.answers.length / LIMIT);
+          this.totalCount = this.answers.length;
+        } else {
+          console.log(result.msg);
+        }
       })
       .catch(action((err: any) => {
-        this.errors = err.response.text;
+        if (err.response.status === 404) {
+          this.errors = err.response.body.msg;
+        }
         throw err;
       }))
       .finally(() => {
@@ -159,12 +180,18 @@ export class AnswerStore {
       user_id: commonStore.user?._id
     }
     return agent.Answers.update(data)
-      .then(( answer: any ) => {
-        this.tempAnswers.set(answer._id, answer);
-        return answer;
+      .then(( result: any ) => {
+        if (result.success) {
+          const answer = result.data
+          this.tempAnswers.set(answer._id, answer)
+        } else {
+          console.log(result.msg)
+        }
       })
       .catch(action((err: any) => {
-        this.errors = err.response.text;
+        if (err.response.status === 404) {
+          this.errors = err.response.body.msg
+        }
         throw err;
       }))
       .finally(() => {
@@ -175,6 +202,19 @@ export class AnswerStore {
   deleteAnswer(id: string) {
     this.tempAnswers.delete(id);
     return agent.Answers.del(id)
+      .then((result: any) => {
+        if (result.success) {
+          const count = result.data
+          this.totalCount = count
+          this.totalPagesCount = Math.ceil(count / LIMIT)
+          if (this.page >= this.totalPagesCount) {
+            this.page = this.totalPagesCount - 1
+            this.loadAnswers()
+          }
+        } else {
+          console.log(result.msg)
+        }    
+      })
   }
 }
 

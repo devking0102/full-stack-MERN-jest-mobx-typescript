@@ -4,10 +4,16 @@ export class questionService {
     async createQuestion(data: any) {
         try {
             const newQuestion = await Question.create(data)
-            return newQuestion
+            return {
+                success: true,
+                data: newQuestion
+            }
 
         } catch (error) {
-            console.log(error)
+            return {
+                success: false,
+                msg: 'Question is created unsuccessfully!'
+            }
         }
     }
 
@@ -21,13 +27,19 @@ export class questionService {
             const count = await Question.find().countDocuments()
 
             return {
-                questions: questions,
-                totalCount: count,
-                totalPage: Math.ceil(count / limit)
+                success: true,
+                data: {
+                    questions: questions,
+                    totalCount: count,
+                    totalPage: Math.ceil(count / limit)
+                }
             }
 
         } catch (error) {
-            console.log(error)
+            return {
+                success: false,
+                msg: 'Error occured!'
+            }
         }
     }
 
@@ -35,10 +47,16 @@ export class questionService {
     async getAllQuestions() {
         try {
             const questions = await Question.find({})
-            return questions
+            return {
+                success: true,
+                data: questions
+            }
 
         } catch (error) {
-            console.log(error)
+            return {
+                success: false,
+                msg: 'Error occured!'
+            }
         }
     }
 
@@ -48,12 +66,21 @@ export class questionService {
         try {
             const question = await Question.findById({_id:id})
             if (!question) {
-                return 'question not available'
+                return {
+                    success: false,
+                    msg: 'question not available'
+                }
             }
-            return question
+            return {
+                success: true,
+                data: question
+            }
 
         } catch (error) {
-            console.log(error)
+            return {
+                success: false,
+                msg: 'Error occured!'
+            }
         }
     }
 
@@ -65,11 +92,20 @@ export class questionService {
                 //new:true, so the dats being returned, is the update one
                 const question = await Question.findByIdAndUpdate({_id:id}, data, {new: true})                
                 if(!question){
-                    return "question not available"
+                    return {
+                        success: false,
+                        msg: 'Question not available!'
+                    }
                 }
-                return question          
+                return {
+                    success: true,
+                    data: question
+                }
         } catch (error) {
-            console.log(error)
+            return {
+                success: false,
+                msg: 'Error occured!'
+            }
         }
     }
 
@@ -78,10 +114,21 @@ export class questionService {
         try {
             const question = await Question.findByIdAndDelete(id)
             if (!question) {
-                return 'question not available'
+                return {
+                    success: false,
+                    msg: 'Question not available!'
+                }
+            }
+            const count = await Question.countDocuments()
+            return {
+                success: true,
+                data: count
             }
         } catch (error) {
-            console.log(error)
+            return {
+                success: false,
+                msg: 'Error occured!'
+            }
         }
     }
 }

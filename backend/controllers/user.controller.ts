@@ -17,12 +17,15 @@ class userController {
         const {error, value} = UserschemaValidate.validate(data)
 
         if(error){
-            res.send(error.message)
+            res.status(404).json({
+                success: false,
+                msg: error.message
+            })
 
         }else{
             //call the create user function in the service and pass the data from the request
-            const user = await userServices.createUser(value)
-            res.status(201).send(user)          
+            const result = await userServices.createUser(value)
+            res.status(201).json(result)          
         }
         
     }
@@ -32,7 +35,7 @@ class userController {
         const {limit, offset} = req.query
         
         const result = await userServices.getUsers(limit, offset)
-        res.send(result)
+        res.json(result)
     }
 
 
@@ -40,23 +43,23 @@ class userController {
     getAUser = async (req: Request, res: Response) => {
         //get id from the parameter
         const id = req.params.id
-        const user = await userServices.getUser(id)
-        res.send(user)
+        const result = await userServices.getUser(id)
+        res.json(result)
     }
 
     //update user
     updateUser = async (req: Request, res: Response) => {
         const id = req.params.id
-        const user = await userServices.updateUser(id, req.body)  
-        res.send(user)
+        const result = await userServices.updateUser(id, req.body)  
+        res.json(result)
     }
 
 
     //delete a user
     deleteUser = async (req: Request, res: Response) => {
         const id = req.params.id
-        await userServices.deleteUser(id)
-        res.send('user deleted')
+        const result = await userServices.deleteUser(id)
+        res.json(result)
     }
 
 }
