@@ -1,13 +1,13 @@
-import React from 'react';
-import { Observer } from 'mobx-react-lite';
+import React from 'react'
+import { Observer } from 'mobx-react-lite'
 import 'bootstrap/dist/css/bootstrap.min.css'
-import AnswerActions from './AnswerActions';
-import { useState } from 'react';
+import AnswerActions from './AnswerActions'
+import { useState } from 'react'
 
 const AnswerPreview: React.FC<any> = props => {
   const [showMore, setShowMore] = useState(false)
   return <Observer>{() => {
-    const { answer } = props;
+    const { answer } = props
     const toggleShowMore = (e: any) => {
       e.preventDefault()
       setShowMore(!showMore)
@@ -48,7 +48,6 @@ const AnswerPreview: React.FC<any> = props => {
       </div>
     );
   }}</Observer>
-};
+}
 
-
-export default AnswerPreview;
+export default AnswerPreview

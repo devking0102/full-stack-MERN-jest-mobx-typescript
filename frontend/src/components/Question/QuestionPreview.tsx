@@ -7,7 +7,7 @@ import { useState } from 'react';
 const QuestionPreview: React.FC<any> = props => {
   const [showMore, setShowMore] = useState(false)
   return <Observer>{() => {
-    const { question } = props;
+    const { question } = props
     const toggleShowMore = (e: any) => {
       e.preventDefault()
       setShowMore(!showMore)
@@ -42,9 +42,8 @@ const QuestionPreview: React.FC<any> = props => {
           </div>
         </div>
       </div>
-    );
+    )
   }}</Observer>
-};
+}
 
-
-export default QuestionPreview;
+export default QuestionPreview
