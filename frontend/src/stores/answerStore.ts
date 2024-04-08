@@ -101,7 +101,7 @@ export class AnswerStore {
         this.tempAnswers.clear();
         if (result.success) {
           const answers = result.data.answers
-          answers.forEach((answer: any) => this.tempAnswers.set(answer._id, answer))
+          answers.map((answer: any) => this.tempAnswers.set(answer._id, answer))
           this.totalPagesCount = result.data.totalPage
           this.totalCount = result.data.totalCount
         } else {
@@ -208,7 +208,7 @@ export class AnswerStore {
           this.totalCount = count
           this.totalPagesCount = Math.ceil(count / LIMIT)
           if (this.page >= this.totalPagesCount) {
-            this.page = this.totalPagesCount - 1
+            this.page = this.page > 0 ? this.totalPagesCount - 1 : 0
             this.loadAnswers()
           }
         } else {

@@ -217,7 +217,7 @@ export class QuestionStore {
           this.totalCount = count
           this.totalPagesCount = Math.ceil(count / LIMIT)
           if (this.page >= this.totalPagesCount) {
-            this.page = this.totalPagesCount - 1
+            this.page = this.page > 0 ? this.totalPagesCount - 1 : 0
             this.loadQuestions()
           }
         } else {
